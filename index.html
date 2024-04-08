@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom Styles */
+body {
+    background-color: #000;
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background-color: #111;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.input-option label {
+    margin-right: 10px;
+    color: #ddd;
+}
+
+.input-option input[type="radio"] {
+    margin-right: 5px;
+}
+
+#imageForm,
+#textForm {
+    margin-top: 20px;
+}
+
+#whitelistForm {
+    margin-top: 30px;
+}
+
+#resultDisplay {
+    margin-top: 20px;
+    color: #ddd;
+}
+
+nav {
+    background-color: #222;
+    padding: 10px 0;
+    border-bottom: 1px solid #444;
+}
+
+nav h1 {
+    color: #fff;
+}
+
+nav button {
+    background-color: #4a4a4a;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+nav button:hover {
+    background-color: #666;
+}
+
+.form-input {
+    background-color: #333;
+    color: #ddd;
+    border: 1px solid #555;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #aaa;
+}
+
+button.cursor-pointer:hover {
+    filter: brightness(0.9);
+}
+
+button.bg-blue-500 {
+    background-color: #3182ce;
+}
+
+button.bg-blue-500:hover {
+    background-color: #2c5282;
+}
+
+button.bg-green-500 {
+    background-color: #38a169;
+}
+
+button.bg-green-500:hover {
+    background-color: #2f855a;
+}
+
+button.bg-red-500 {
+    background-color: #e53e3e;
+}
+
+button.bg-red-500:hover {
+    background-color: #c53030;
+}
+
+/* Admin Panel Styles */
+#adminPanel {
+    color: #fff;
+}
+
+#adminPanel button {
+    background-color: #4a4a4a;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#adminPanel button:hover {
+    background-color: #666;
+}
+
+#adminPanel .form-input {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+#adminPanel .form-input:focus {
+    outline: none;
+    border-color: #aaa;
+}
+
+#adminPanel .bg-blue-500 {
+    background-color: #3182ce;
+}
+
+#adminPanel .bg-blue-500:hover {
+    background-color: #2c5282;
+}
+
+#adminPanel .bg-green-500 {
+    background-color: #38a169;
+}
+
+#adminPanel .bg-green-500:hover {
+    background-color: #2f855a;
+}
+
+#adminPanel .bg-red-500 {
+    background-color: #e53e3e;
+}
+
+#adminPanel .bg-red-500:hover {
+    background-color: #c53030;
+}
+
+    </style>
+    <title>License Plate Recognition</title>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">License Plate Recognition</h1>
+            <div>
+                <button id="userPanelBtn" onclick="switchToUserPanel()">User Panel</button>
+                <button id="adminPanelBtn" onclick="switchToAdminPanel()">Admin Panel</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- User Panel -->
+    <div id="userPanel" class="container mx-auto mt-8 p-8 bg-white rounded-md shadow-md">
+        <div class="input-option mb-4">
+            <label class="block text-sm font-medium text-gray-700">Select Input Method:</label>
+            <div class="flex items-center">
+                <input type="radio" id="inputImage" name="inputMethod" value="image" class="mr-2"
+                    onclick="showImageForm()" checked>
+                <label for="inputImage">Upload Image</label>
+                <input type="radio" id="inputText" name="inputMethod" value="text" class="ml-8 mr-2"
+                    onclick="showTextForm()">
+                <label for="inputText">Enter Text</label>
+            </div>
+        </div>
+
+        <!-- Image Upload Form -->
+        <form id="imageForm">
+            <label for="image" class="block text-sm font-medium text-gray-700">Upload Image</label>
+            <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png"
+                class="form-input py-2 px-4 block w-full leading-5 rounded-md transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+            <button type="button" onclick="recognizeLicensePlate('image')"
+                class="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md cursor-pointer">Recognize
+                License Plate</button>
+        </form>
+
+        <!-- Text Input Form (Initially Hidden) -->
+        <form id="textForm" class="hidden">
+            <label for="plateText" class="block text-sm font-medium text-gray-700">Enter Plate Text</label>
+            <input type="text" id="plateText" name="plateText"
+                class="form-input py-2 px-4 block w-full leading-5 rounded-md transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                placeholder="Enter plate text">
+            <button type="button" onclick="recognizeLicensePlate('text')"
+                class="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md cursor-pointer">Recognize
+                License Plate</button>
+        </form>
+
+        <!-- Result Display -->
+        <div id="resultDisplay" class="mt-8"></div>
+    </div>
+
+    <!-- Admin Panel (Login Form) -->
+    <div id="adminPanel" class="container mx-auto mt-8 p-8 bg-white rounded-md shadow-md hidden">
+        <form id="adminLoginForm">
+            <div class="mb-4">
+                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" id="username" name="username"
+                    class="form-input py-2 px-4 block w-full leading-5 rounded-md transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+            </div>
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="password" name="password"
+                    class="form-input py-2 px-4 block w-full leading-5 rounded-md transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+            </div>
+            <button type="button" onclick="adminLogin()"
+                class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md cursor-pointer">Login</button>
+        </form>
+        <div id="whitelistForm" class="mt-8 hidden">
+            <label for="whitelist" class="block text-sm font-medium text-gray-700">Whitelist</label>
+            <div class="mt-1 relative rounded-md shadow-sm flex">
+                <input type="text" id="whitelist" name="whitelist"
+                    class="form-input py-2 px-4 block w-full leading-5 rounded-md transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    placeholder="Enter a plate number">
+                <button type="button" onclick="addToWhitelist()"
+                    class="ml-2 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md cursor-pointer">Add</button>
+            </div>
+        </div>
+        <div id="whitelistDisplay" class="mt-8 hidden">
+            <h2 class="text-lg font-semibold mb-2">Current Whitelist:</h2>
+            <ul id="whitelistItems" class="list-disc pl-6"></ul>
+        </div>
+    </div>
+
+    <script>
+        let whitelist = [];
+        let isLoggedIn = false;
+
+        function switchToUserPanel() {
+            document.getElementById('userPanel').classList.remove('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+        }
+
+        function switchToAdminPanel() {
+            document.getElementById('adminPanel').classList.remove('hidden');
+            document.getElementById('userPanel').classList.add('hidden');
+        }
+
+        function adminLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            // Perform authentication (replace with actual authentication logic)
+            if (username === 'MADHAVI' && password === 'CSDBATCH3') {
+                isLoggedIn = true;
+                document.getElementById('whitelistForm').classList.remove('hidden');
+                document.getElementById('whitelistDisplay').classList.remove('hidden');
+                document.getElementById('adminLoginForm').classList.add('hidden');
+            } else {
+                alert('Invalid username or password.');
+            }
+        }
+
+        // Functions for Whitelist Management (Admin Panel)
+        function addToWhitelist() {
+            // Check if user is logged in
+            if (!isLoggedIn) {
+                alert('Please log in as admin to access this feature.');
+                return;
+            }
+
+            const plateNumber = document.getElementById('whitelist').value.trim();
+            if (plateNumber !== '' && !whitelist.includes(plateNumber)) {
+                whitelist.push(plateNumber);
+                updateWhitelistDisplay();
+                document.getElementById('whitelist').value = '';
+            }
+        }
+
+        function removeFromWhitelist(plateNumber) {
+            whitelist = whitelist.filter(plate => plate !== plateNumber);
+            updateWhitelistDisplay();
+        }
+
+        function updateWhitelistDisplay() {
+            const whitelistItems = document.getElementById('whitelistItems');
+            whitelistItems.innerHTML = '';
+            whitelist.forEach((plateNumber) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = plateNumber;
+
+                // Delete Button
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.className = 'ml-2 bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded-md cursor-pointer';
+                deleteButton.onclick = () => removeFromWhitelist(plateNumber);
+
+                listItem.appendChild(deleteButton);
+
+                whitelistItems.appendChild(listItem);
+            });
+        }
+
+        // Function for License Plate Recognition (User Panel)
+        function recognizeLicensePlate(inputMethod) {
+            if (inputMethod === 'text') {
+                const plateText = document.getElementById('plateText').value.trim();
+                if (plateText !== '') {
+                    const resultDisplay = document.getElementById('resultDisplay');
+                    if (whitelist.includes(plateText)) {
+                        resultDisplay.innerHTML = `<p>Plate Number: ${plateText}</p><p>Allowed</p>`;
+                    } else {
+                        resultDisplay.innerHTML = `<p>Plate Number: ${plateText}</p><p>Not Allowed</p>`;
+                    }
+                } else {
+                    alert('Please enter plate text before recognizing the license plate.');
+                }
+            } else if (inputMethod === 'image') {
+                const imageInput = document.getElementById('image');
+                const imageFile = imageInput.files[0];
+
+                if (imageFile) {
+                    const formData = new FormData();
+                    formData.append('upload', imageFile);
+
+                    // Display loading state
+                    document.getElementById('resultDisplay').innerHTML = 'Recognizing...';
+
+                    fetch('https://api.platerecognizer.com/v1/plate-reader/', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'Authorization': 'Token a8dfed6caef265edce7da0bd97c8bf3b040ef463'
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const plateNumber = data.results[0]?.plate ?? 'No plate detected';
+                            const resultDisplay = document.getElementById('resultDisplay');
+
+                            if (whitelist.includes(plateNumber)) {
+                                resultDisplay.innerHTML = `<p>Plate Number: ${plateNumber}</p><p>Allowed</p>`;
+                            } else {
+                                resultDisplay.innerHTML = `<p>Plate Number: ${plateNumber}</p><p>Not Allowed</p>`;
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                } else {
+                    alert('Please select an image before recognizing the license plate.');
+                }
+            }
+        }
+
+        // Show Image Upload Form and Hide Text Input Form
+        function showImageForm() {
+            document.getElementById('imageForm').classList.remove('hidden');
+            document.getElementById('textForm').classList.add('hidden');
+        }
+
+        // Show Text Input Form and Hide Image Upload Form
+        function showTextForm() {
+            document.getElementById('imageForm').classList.add('hidden');
+            document.getElementById('textForm').classList.remove('hidden');
+        }
+    </script>
+</body>
+
+</html>
