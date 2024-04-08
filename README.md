@@ -9,5 +9,7 @@ such as color, type, make, and model. Moreover, the system facilitates instant l
 user-friendly cloud-based monitoring dashboard, thereby enhancing overall efficiency in vehicle identification and
 management. This project signifies a significant leap in automated license plate recognition technology, offering a
 comprehensive solution for security and surveillance applications.
+
+
 Keywords: License plate recognition, Computer vision, Optical Character Recognition (OCR), Vehicle attributes
 identification, Cloud-based monitoring, Security, Surveillance, Automated systems.
